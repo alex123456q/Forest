@@ -2,5 +2,4 @@
 
 #include <vector> 
 
-void GenerateTerrain(int sizeForTerrain, int maxHeight,
-	std::vector<std::vector<int>>& terrainArray);
+void GenerateTerrain(int sizeForTerrain, std::vector<std::vector<float>>& terrainArray);
