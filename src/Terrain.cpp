@@ -17,7 +17,7 @@ static void genTerrainInsideBlock(std::vector<std::vector<float>>& terrainArray,
 		return;
 	}
 	// 0 0 1 0 // 0 1 1 1 // 1 1 1 0 // 1 0 0 0 // all
-	const float addingCoeff = 0.3f;
+	const float addingCoeff = 0.1f;
 	const float halfOfMaxValueAdding = (right - left) * addingCoeff / 2.f;
 	std::uniform_real_distribution<float> distrib( -halfOfMaxValueAdding, halfOfMaxValueAdding );
 
@@ -73,7 +73,7 @@ static void zeroLowestValues(std::vector<std::vector<float>>& terrainArray)
 	const float lowestValue = 0.2f;
 	for (int i = 0; i < terrainArray.size(); ++i) {
 		for (int j = 0; j < terrainArray[i].size(); ++j) {
-			terrainArray[i][j] = terrainArray[i][j] < lowestValue ? lowestValue : terrainArray[i][j];
+			terrainArray[i][j] = terrainArray[i][j] < lowestValue ? 0.f : terrainArray[i][j];
 		}
 	}
 }
