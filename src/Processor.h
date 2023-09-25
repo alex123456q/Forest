@@ -10,6 +10,12 @@ public:
 	void DisplayScene() const;
 private:
 	std::vector<std::vector<float>> terrainArray;
+	std::vector<std::pair<int,int>> treePos;
+
+	const int maxTerrainHeight = 100;
 
 	void displayTerrain() const;
+	void displayForest() const;
+
+	void generateForest(int sizeForTerrain);
 };
