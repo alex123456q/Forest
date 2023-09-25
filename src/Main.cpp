@@ -9,7 +9,7 @@
 #include <gl/GL.h>
 
 CCamera curCamera;
-CProcessor processor(17);
+CProcessor processor(257);
 
 static void reshapeView(int w, int h)
 {
@@ -18,7 +18,7 @@ static void reshapeView(int w, int h)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();            
-    gluPerspective( 40.0, static_cast<GLfloat>(w) / h, 1, 100.0);
+    gluPerspective( 45.0, static_cast<GLfloat>(w) / h, 0.1, 100.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -58,6 +58,8 @@ static void moveInteractionByMouse(int x, int y)
 
 static void displayFunc() 
 {
+    int startTime = glutGet(GLUT_ELAPSED_TIME);
+
     processor.DisplayScene();
 
     glMatrixMode(GL_MODELVIEW);
@@ -66,6 +68,9 @@ static void displayFunc()
         curCamera.GetPosition()[0], curCamera.GetPosition()[1], curCamera.GetPosition()[2],
         curCamera.GetTarget()[0], curCamera.GetTarget()[1], curCamera.GetTarget()[2],
         curCamera.GetUp()[0], curCamera.GetUp()[1], curCamera.GetUp()[2]);
+
+    int diffTime = glutGet(GLUT_ELAPSED_TIME) - startTime;
+    curCamera.SetTime( diffTime );
 }
 
 
