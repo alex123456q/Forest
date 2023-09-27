@@ -5,6 +5,7 @@
 #include <random>
 #include <gl/glut.h>
 #include <gl/GL.h>
+#include <glm/vec3.hpp> 
 
 
 typedef std::array<GLfloat, 3> vector3;
@@ -28,7 +29,7 @@ void CProcessor::generateForest(int sizeForTerrain) {
 CProcessor::CProcessor(int sizeForTerrain)
 {
     // TODO: check sizeForTerrain 2n-1
-    GenerateTerrain(sizeForTerrain, terrainArray);
+    Utils::GenerateTerrain(sizeForTerrain, terrainArray, normalsForTerrain);
     
     generateForest(sizeForTerrain);
 }
@@ -36,8 +37,6 @@ CProcessor::CProcessor(int sizeForTerrain)
 
 void CProcessor::DisplayScene() const
 {
-    glClear(GL_COLOR_BUFFER_BIT);
-
     displayTerrain();
     displayForest();
     glFlush();
@@ -63,17 +62,20 @@ static vector3 getColorForHeight(float height)
 }
 
 static void drawTerrainTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int maxHeight,
-    const std::vector<std::vector<float>>& terrainArray)
+    const std::vector<std::vector<float>>& terrainArray,
+    const std::vector<std::vector<glm::vec3>>& normalsForTerrain)
 {
     glBegin(GL_TRIANGLES);
-    
+
     glColor3fv(getColorForHeight(terrainArray[y1][x1]).data());
+
+    glNormal3f(normalsForTerrain[y1][x1][0], normalsForTerrain[y1][x1][1], normalsForTerrain[y1][x1][2]);
     glVertex3i(x1, y1, round(maxHeight * terrainArray[y1][x1]));
 
-    glColor3fv(getColorForHeight(terrainArray[y2][x2]).data());
+    glNormal3f(normalsForTerrain[y2][x2][0], normalsForTerrain[y2][x2][1], normalsForTerrain[y2][x2][2]);
     glVertex3i(x2, y2, round(maxHeight * terrainArray[y2][x2]));
 
-    glColor3fv(getColorForHeight(terrainArray[y3][x3]).data());
+    glNormal3f(normalsForTerrain[y3][x3][0], normalsForTerrain[y3][x3][1], normalsForTerrain[y3][x3][2]);
     glVertex3i(x3, y3, round(maxHeight * terrainArray[y3][x3]));
 
     glEnd();
@@ -85,11 +87,12 @@ void CProcessor::displayTerrain() const
 
     for (int y = 0; y < terrainArray.size() - 1; ++y) {
         for (int x = 0; x < terrainArray[0].size() - 1; ++x) {
-            drawTerrainTriangle(x, y, x + 1, y, x + 1, y + 1, maxTerrainHeight, terrainArray);
-            drawTerrainTriangle(x, y, x + 1, y + 1, x, y + 1, maxTerrainHeight, terrainArray);
+            drawTerrainTriangle(x, y, x + 1, y, x + 1, y + 1, maxTerrainHeight, terrainArray, normalsForTerrain);
+            drawTerrainTriangle(x, y, x + 1, y + 1, x, y + 1, maxTerrainHeight, terrainArray, normalsForTerrain);
         }
     }
 }
+
 
 static void drawTree(int x, int y, int z)
 {
@@ -98,24 +101,24 @@ static void drawTree(int x, int y, int z)
     const int treeHeight = 7;
     const int treeWidth = 4;
 
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glColor3fv(GreenTreeColor);
+    glm::vec3 normal;
+    Utils::GetNormalForTriangle(x - treeWidth / 2, y, z, 
+        x, y, z + treeHeight,
+        x + treeWidth / 2, y, z, 
+        normal);
+    glNormal3f(normal[0], normal[1], normal[2]);
     glVertex3i(x - treeWidth / 2, y, z);
-
-    glColor3fv(GreenTreeColor);
     glVertex3i(x, y, z + treeHeight);
-
-    glColor3fv(GreenTreeColor);
     glVertex3i(x + treeWidth / 2, y, z);
 
-
-    glColor3fv(GreenTreeColor);
+    Utils::GetNormalForTriangle(x, y - treeWidth / 2, z,
+        x, y, z + treeHeight,
+        x, y + treeWidth / 2, z,
+        normal);
+    glNormal3f(normal[0], normal[1], normal[2]);
     glVertex3i(x, y - treeWidth / 2, z);
-
-    glColor3fv(GreenTreeColor);
     glVertex3i(x, y, z + treeHeight);
-
-    glColor3fv(GreenTreeColor);
     glVertex3i(x, y + treeWidth / 2, z);
 
     glEnd();
@@ -126,9 +129,9 @@ void CProcessor::displayForest() const
     for (int i = 0; i < treePos.size(); ++i) {
         const int x = treePos[i].first;
         const int y = treePos[i].second;
-        if (terrainArray[x][y] < WaterLevel) {
+        if (terrainArray[y][x] < WaterLevel) {
             continue;
         }
-        drawTree(x, y, round(maxTerrainHeight * terrainArray[x][y]));
+        drawTree(x, y, round(maxTerrainHeight * terrainArray[y][x]));
     }
 }

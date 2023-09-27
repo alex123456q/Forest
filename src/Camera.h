@@ -21,7 +21,7 @@ private:
     glm::vec3 direction{ -1., 0., 0. };
     glm::vec3 up{ 0., 0., 1. };
     float alpha = 0.f; // 0..2pi along X horizontalAngle
-    float beta = -3.14f; // -pi .. pi along Y verticalAngle
+    float beta = 0.f;//-3.14f; // -pi .. pi along Y verticalAngle
     int width = 1024;
     int height = 1024;  
     float deltaTime = 1;

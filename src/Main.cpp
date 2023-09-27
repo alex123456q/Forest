@@ -58,6 +58,8 @@ static void moveInteractionByMouse(int x, int y)
 
 static void displayFunc() 
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     int startTime = glutGet(GLUT_ELAPSED_TIME);
 
     processor.DisplayScene();
@@ -73,6 +75,21 @@ static void displayFunc()
     curCamera.SetTime( diffTime );
 }
 
+void init() 
+{
+    GLfloat light_color[] = { 1.0, 1.0, 1.0 };
+
+
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_NORMALIZE);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -80,6 +97,7 @@ int main(int argc, char **argv)
     glutInitWindowSize(500, 500);
     curCamera.SetWH(500, 500);
     glutCreateWindow("Basic");
+    init();
 
     glutReshapeFunc(reshapeView);
     glutDisplayFunc( displayFunc );

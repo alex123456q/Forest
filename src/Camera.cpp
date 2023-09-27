@@ -86,7 +86,7 @@ void CCamera::MoveCamera(int key)
         default:
             break;
     }
-    //std::cout << "pos" << position[0] << " " << position[1] << " " << position[2] << std::endl; 
-    //std::cout << "direction" << direction[0] << " " << direction[1] << " " << direction[2] << std::endl; 
+    std::cout << "pos" << position[0] << " " << position[1] << " " << position[2] << std::endl; 
+    std::cout << "direction" << direction[0] << " " << direction[1] << " " << direction[2] << std::endl; 
 
 }
