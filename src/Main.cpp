@@ -5,16 +5,17 @@
 
 #include <vector>
 #include <array>
+#include <memory>
 #include <gl/glut.h>
 #include <gl/GL.h>
 
-CCamera curCamera;
-CProcessor processor(257);
+std::unique_ptr<CCamera> curCamera = nullptr;
+std::unique_ptr<CProcessor> processor = nullptr;
 
 static void reshapeView(int w, int h)
 {
     glViewport(0, 0, w, h);    
-    curCamera.SetWH(w, h);
+    curCamera->SetWH(w, h);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();            
@@ -23,9 +24,9 @@ static void reshapeView(int w, int h)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(
-        curCamera.GetPosition()[0], curCamera.GetPosition()[1], curCamera.GetPosition()[2],
-        curCamera.GetTarget()[0], curCamera.GetTarget()[1], curCamera.GetTarget()[2],
-        curCamera.GetUp()[0], curCamera.GetUp()[1], curCamera.GetUp()[2]);
+        curCamera->GetPosition()[0], curCamera->GetPosition()[1], curCamera->GetPosition()[2],
+        curCamera->GetTarget()[0], curCamera->GetTarget()[1], curCamera->GetTarget()[2],
+        curCamera->GetUp()[0], curCamera->GetUp()[1], curCamera->GetUp()[2]);
 }
 
 static void keyboardInteraction(unsigned char key, int x, int y)
@@ -45,14 +46,14 @@ static void moveInteractionByKey(int key, int x, int y)
     case GLUT_KEY_UP:
     case GLUT_KEY_RIGHT:
     case GLUT_KEY_DOWN:
-        curCamera.MoveCamera(key);
+        curCamera->MoveCamera(key);
         break;
     }
 }
 
 static void moveInteractionByMouse(int x, int y)
 {
-    curCamera.MoveCamera(x, y); 
+    curCamera->MoveCamera(x, y);
     glutPostRedisplay();
 }
 
@@ -62,17 +63,17 @@ static void displayFunc()
 
     int startTime = glutGet(GLUT_ELAPSED_TIME);
 
-    processor.DisplayScene();
+    processor->DisplayScene();
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(
-        curCamera.GetPosition()[0], curCamera.GetPosition()[1], curCamera.GetPosition()[2],
-        curCamera.GetTarget()[0], curCamera.GetTarget()[1], curCamera.GetTarget()[2],
-        curCamera.GetUp()[0], curCamera.GetUp()[1], curCamera.GetUp()[2]);
+        curCamera->GetPosition()[0], curCamera->GetPosition()[1], curCamera->GetPosition()[2],
+        curCamera->GetTarget()[0], curCamera->GetTarget()[1], curCamera->GetTarget()[2],
+        curCamera->GetUp()[0], curCamera->GetUp()[1], curCamera->GetUp()[2]);
 
     int diffTime = glutGet(GLUT_ELAPSED_TIME) - startTime;
-    curCamera.SetTime( diffTime );
+    curCamera->SetTime( diffTime );
 }
 
 void init() 
@@ -94,8 +95,10 @@ void init()
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
-    glutInitWindowSize(500, 500);
-    curCamera.SetWH(500, 500);
+    glutInitWindowSize( 500, 500 );
+    curCamera = std::unique_ptr<CCamera>( new CCamera() );
+    processor = std::unique_ptr<CProcessor>( new CProcessor( 257 ) );
+    curCamera->SetWH(500, 500);
     glutCreateWindow("Basic");
     init();
 
