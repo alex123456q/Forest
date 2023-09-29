@@ -12,7 +12,6 @@
 CProcessor::CProcessor(int sizeForTerrain) : terrain( new CTerrain( sizeForTerrain ) ),
 trees( new CTrees( sizeForTerrain, terrain ) )
 {
-    // TODO: check sizeForTerrain 2n-1
 }
 
 
@@ -21,4 +20,9 @@ void CProcessor::DisplayScene() const
     terrain->Display();
     trees->Display();
     glFlush();
+}
+
+void CProcessor::ChangeSeason() const 
+{
+    trees->ChangeSeason();
 }

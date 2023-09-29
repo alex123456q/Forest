@@ -76,6 +76,21 @@ static void displayFunc()
     curCamera->SetTime( diffTime );
 }
 
+static void tapInteractionFromMouse(int button, int state, int x, int y)
+{
+    if (state != GLUT_DOWN) {
+        return;
+    }
+    switch ( button ) {
+        case GLUT_LEFT_BUTTON:
+            processor->ChangeSeason();
+            glutPostRedisplay();
+            break;
+        default:
+            break;
+    }
+}
+
 void init() 
 {
     GLfloat light_color[] = { 1.0, 1.0, 1.0 };
@@ -104,9 +119,10 @@ int main(int argc, char **argv)
 
     glutReshapeFunc(reshapeView);
     glutDisplayFunc( displayFunc );
-    glutKeyboardFunc(keyboardInteraction);
-    glutSpecialFunc(moveInteractionByKey);
-    glutPassiveMotionFunc(moveInteractionByMouse);
+    glutKeyboardFunc( keyboardInteraction );
+    glutSpecialFunc( moveInteractionByKey );
+    glutPassiveMotionFunc( moveInteractionByMouse );
+    glutMouseFunc( tapInteractionFromMouse );
     //();
 
     glutMainLoop();

@@ -16,7 +16,13 @@
 //TODO: enable logging
 
 typedef std::array<GLfloat, 3> vector3;
-const float GreenTreeColor[3] = { 0.f, 0.2f, 0.1f };
+const vector3 GreenTreeColor = { 0.f, 0.2f, 0.1f };
+const vector3 YellowTreeColor = { 0.8f, 0.5f, 0.3f };
+const vector3 WhiteTreeColor = { 0.7f, 0.7f, 0.8f };
+const vector3 YoungGreenTreeColor = { 0.6f, 0.9f, 0.6f };
+
+static_assert( Utils::TSeason::SE_Count == 4, "Seasons count changed. Check code below.");
+const std::array<vector3, 4> SeasonColors = { GreenTreeColor, YellowTreeColor, WhiteTreeColor, YoungGreenTreeColor };
 
 CTrees::CTrees(int size, const std::shared_ptr<CTerrain>& _terrain) 
     : sizeForTerrain(size), terrain(_terrain) 
@@ -24,14 +30,14 @@ CTrees::CTrees(int size, const std::shared_ptr<CTerrain>& _terrain)
     generateForest();
 };
 
-static void drawTree(int x, int y, int z)
+static void drawTree(int x, int y, int z, const vector3& color)
 {
     glBegin(GL_TRIANGLES);
 
     const int treeHeight = 7;
     const int treeWidth = 4;
 
-    glColor3fv(GreenTreeColor);
+    glColor3fv( color.data() );
     glm::vec3 normal;
     Utils::GetNormalForTriangle(x - treeWidth / 2, y, z,
         x, y, z + treeHeight,
@@ -63,11 +69,17 @@ void CTrees::Display() const
         if ( terrain->GetHeightInPoint(x, y) < terrain->GetWaterLevel() ) {
             continue;
         }
-        drawTree(x, y, round(terrain->GetHeightInPoint(x, y)));
+        drawTree(x, y, round(terrain->GetHeightInPoint(x, y)), SeasonColors[curSeason]);
     }
 }
 
-void CTrees::generateForest() {
+void CTrees::ChangeSeason() 
+{
+    curSeason = static_cast<Utils::TSeason>( (curSeason + 1) % Utils::TSeason::SE_Count );
+}
+
+void CTrees::generateForest()
+{
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distrib(0, sizeForTerrain - 1);
